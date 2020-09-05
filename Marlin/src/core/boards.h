@@ -316,6 +316,8 @@
 #define BOARD_CREALITY_V427           4034  // Creality v4.2.7 (STM32F103RE)
 #define BOARD_TRIGORILLA_PRO          4035  // Trigorilla Pro (STM32F103ZET6)
 
+#define BOARD_SOONGON_I3              4080  // Soongon I3 (STM32F103RCT6)
+
 //
 // ARM Cortex-M4F
 //

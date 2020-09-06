@@ -25,7 +25,11 @@
  * Release version. Leave the Marlin version or apply a custom scheme.
  */
 #ifndef SHORT_BUILD_VERSION
+#if MB(SOONGON_I3)
+  #define SHORT_BUILD_VERSION "SG-2.0.6.1"
+#else
   #define SHORT_BUILD_VERSION "2.0.6.1"
+#endif
 #endif
 
 /**
@@ -97,7 +101,11 @@
    * documentation about a specific Marlin release. Displayed in the Info Menu.
    */
 #ifndef WEBSITE_URL
+#if MB(SOONGON_I3) 
+  #define WEBSITE_URL "https://soongon.com"
+#else
   #define WEBSITE_URL "https://marlinfw.org"
+#endif
 #endif
 
 /**

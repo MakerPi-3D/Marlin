@@ -21,6 +21,8 @@
  */
 #pragma once
 
+#include "../../core/macros.h"
+
 #ifndef __STM32F1__
   #error "Oops! Select an STM32F1 board in 'Tools > Board.'"
 #endif
@@ -29,11 +31,21 @@
  * 21017 Victor Perez Marlin for stm32f1 test
  */
 
-#define BOARD_INFO_NAME      "Misc. STM32F1R"
-#define DEFAULT_MACHINE_NAME "STM32F103RET6"
+#define BOARD_INFO_NAME      "Misc. STM32F103RCT6"
+#define DEFAULT_MACHINE_NAME "Soongon I3"
 
 // Ignore temp readings during development.
 //#define BOGUS_TEMPERATURE_GRACE_PERIOD    2000
+
+//
+// EEPROM
+//
+#if EITHER(NO_EEPROM_SELECTED, FLASH_EEPROM_EMULATION)
+  #define FLASH_EEPROM_EMULATION
+  #define EEPROM_PAGE_SIZE	(uint16)0x400  /* Page size = 1KByte */
+  #define EEPROM_START_ADDRESS	((uint32)(0x8000000 + 256 * 1024 - 1 * EEPROM_PAGE_SIZE))
+  #define MARLIN_EEPROM_SIZE    EEPROM_PAGE_SIZE  // 1KB
+#endif
 
 //
 // Limit Switches

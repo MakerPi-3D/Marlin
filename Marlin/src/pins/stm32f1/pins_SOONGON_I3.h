@@ -95,8 +95,10 @@
 #define TEMP_1_PIN                          -1//PA2   // Analog Input
 
 //
-// SD Card on LCD
+// SD Card
 //
+#define SDIO_SUPPORT
+#define SDIO_CLOCK                          2000000  // 2.0 MHz
 #define SD_CD                               PC7
 #define SD_DATA0                            PC8
 #define SD_DATA1                            PC9

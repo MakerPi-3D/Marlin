@@ -48,6 +48,11 @@
 #endif
 
 //
+// Release PB3 (X_STOP_PIN) and PB4 (Y_STOP_PIN) from JTAG NRST role
+//
+#define DISABLE_DEBUG
+
+//
 // Limit Switches
 //
 #define X_STOP_PIN                          PB3

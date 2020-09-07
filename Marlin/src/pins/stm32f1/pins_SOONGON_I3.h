@@ -48,9 +48,15 @@
 #endif
 
 //
-// Release PB3 (X_STOP_PIN) and PB4 (Y_STOP_PIN) from JTAG NRST role
+// Timers
 //
-#define DISABLE_DEBUG
+// These are already defined in DUE, so must be undefined first
+#define STEP_TIMER_NUM                         4
+
+//#define DISABLE_DEBUG                           //  We still want to debug with STLINK...
+#define DISABLE_JTAG                              //  We free the jtag pins (PA15) but keep STLINK
+                                                  //  Release PB3 (X_STOP_PIN) from JTAG NRST role.
+                                                  //  Release PB4 (Y_STOP_PIN) from JTAG NRST role.
 
 //
 // Limit Switches

@@ -575,6 +575,22 @@ inline void manage_inactivity(const bool ignore_stepper_queue=false) {
 
   TERN_(USE_CONTROLLER_FAN, controllerFan.update()); // Check if fan should be turned on to cool stepper drivers down
 
+  #if define(SOONGON_I3_SECTION_CODE)
+    // When the nozzle is greater than 50 degrees, turn on the hot fan of the nozzle fan
+    if(thermalManager.degHotend(0) >= 50) 
+    {
+      if(0 == thermalManager.fan_speed[active_extruder])
+      {
+        thermalManager.set_fan_speed(active_extruder, 255);
+      }
+    } else {
+      if(thermalManager.fan_speed[active_extruder] > 0)
+      {
+        thermalManager.set_fan_speed(active_extruder, 0);
+      }
+    }
+  #endif
+
   TERN_(AUTO_POWER_CONTROL, powerManager.check());
 
   TERN_(HOTEND_IDLE_TIMEOUT, hotend_idle.check());

@@ -40,7 +40,7 @@
 
 //#define DEBUG_POWER_LOSS_RECOVERY
 #define SAVE_EACH_CMD_MODE
-#define SAVE_INFO_INTERVAL_MS 10
+#define SAVE_INFO_INTERVAL_MS 0
 
 typedef struct {
   uint8_t valid_head;

@@ -26,7 +26,7 @@
  */
 #ifndef SHORT_BUILD_VERSION
 #if MB(SOONGON_I3)
-  #define SHORT_BUILD_VERSION "SG-2.0.6.3"
+  #define SHORT_BUILD_VERSION "SG-2.0.6.4"
 #else
   #define SHORT_BUILD_VERSION "2.0.6.1"
 #endif

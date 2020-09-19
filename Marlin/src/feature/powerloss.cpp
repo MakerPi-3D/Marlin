@@ -326,6 +326,18 @@ void PrintJobRecovery::resume() {
 
   const uint32_t resume_sdpos = info.sdpos; // Get here before the stepper ISR overwrites it
 
+  #ifdef SOONGON_I3_SECTION_CODE
+    #if HAS_HOTEND
+      HOTEND_LOOP() {
+        #if HAS_MULTI_HOTEND
+          sprintf_P(cmd, PSTR("T%i S"), e);
+          gcode.process_subcommands_now(cmd);
+        #endif
+        gcode.process_subcommands_now_P(PSTR("M109 S200"));
+      }
+    #endif
+  #endif
+
   #if HAS_LEVELING
     // Make sure leveling is off before any G92 and G28
     gcode.process_subcommands_now_P(PSTR("M420 S0 Z0"));

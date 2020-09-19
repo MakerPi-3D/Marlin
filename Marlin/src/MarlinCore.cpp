@@ -575,7 +575,7 @@ inline void manage_inactivity(const bool ignore_stepper_queue=false) {
 
   TERN_(USE_CONTROLLER_FAN, controllerFan.update()); // Check if fan should be turned on to cool stepper drivers down
 
-  #if define(SOONGON_I3_SECTION_CODE)
+  #ifdef SOONGON_I3_SECTION_CODE
     // When the nozzle is greater than 50 degrees, turn on the hot fan of the nozzle fan
     if(thermalManager.degHotend(0) >= 50) 
     {

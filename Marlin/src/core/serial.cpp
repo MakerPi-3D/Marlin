@@ -29,7 +29,11 @@ static PGMSTR(errormagic, "Error:");
 static PGMSTR(echomagic, "echo:");
 
 #if HAS_MULTI_SERIAL
-  int8_t serial_port_index = 0;
+  #if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
+    int8_t serial_port_index = 1;
+  #else
+    int8_t serial_port_index = 0;
+  #endif
 #endif
 
 void serialprintPGM(PGM_P str) {

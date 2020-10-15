@@ -111,6 +111,10 @@
   #include "../feature/spindle_laser.h"
 #endif
 
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
+  #include "../SoongonCore.h"
+#endif
+
 // Delay for delivery of first block to the stepper ISR, if the queue contains 2 or
 // fewer movements. The delay is measured in milliseconds, and must be less than 250ms
 #define BLOCK_DELAY_FOR_1ST_MOVE 100
@@ -1762,6 +1766,11 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
           TERN_(HAS_POSITION_FLOAT, position_float.e = target_float.e);
           de = 0; // no difference
           SERIAL_ECHO_MSG(STR_ERR_COLD_EXTRUDE_STOP);
+          #if ENABLED(SOONGON_MINI_SECTION_CODE)
+            #if ENABLED(SDSUPPORT)
+              sg_mini::mini_sd_write_err_log((char*)STR_ERR_COLD_EXTRUDE_STOP);
+            #endif
+          #endif
         }
       #endif // PREVENT_COLD_EXTRUSION
       #if ENABLED(PREVENT_LENGTHY_EXTRUDE)

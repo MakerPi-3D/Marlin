@@ -556,6 +556,8 @@
   #include "stm32f1/pins_TRIGORILLA_PRO.h"      // STM32F1                                env:trigorilla_pro
 #elif MB(SOONGON_I3)
   #include "stm32f1/pins_SOONGON_I3.h"          // STM32F1                                env:soongon_i3
+#elif MB(SOONGON_MINI)
+  #include "stm32f1/pins_SOONGON_MINI.h"        // STM32F1                                env:soongon_mini
 
 //
 // ARM Cortex-M4F

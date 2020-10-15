@@ -49,6 +49,10 @@
   #include "../../module/tool_change.h"
 #endif
 
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
+  #include "../../SoongonCore.h"
+#endif
+
 /**
  * M104: Set Hotend Temperature target and return immediately
  *
@@ -192,7 +196,9 @@ void GcodeSuite::M109() {
   }
 
   TERN_(AUTOTEMP, planner.autotemp_M104_M109());
-
+#if ENABLED(SOONGON_MINI_SECTION_CODE)
+  sg_mini::mini_set_heatting();
+#endif
   if (got_temp)
     (void)thermalManager.wait_for_hotend(target_extruder, no_wait_for_cooling);
 }

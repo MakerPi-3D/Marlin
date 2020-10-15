@@ -104,13 +104,21 @@
  *
  * :[-1, 0, 1, 2, 3, 4, 5, 6, 7]
  */
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
 #define SERIAL_PORT 2
+#else
+#define SERIAL_PORT 0
+#endif
 
 /**
  * Select a secondary serial port on the board to use for communication with the host.
  * :[-1, 0, 1, 2, 3, 4, 5, 6, 7]
  */
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
 #define SERIAL_PORT_2 1
+#else
+//#define SERIAL_PORT_2 -1
+#endif
 
 /**
  * This setting determines the communication speed of the printer.
@@ -121,7 +129,11 @@
  *
  * :[2400, 9600, 19200, 38400, 57600, 115200, 250000, 500000, 1000000]
  */
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
 #define BAUDRATE 115200
+#else
+#define BAUDRATE 250000
+#endif
 
 // Enable the Bluetooth serial interface on AT90USB devices
 //#define BLUETOOTH
@@ -129,11 +141,6 @@
 // Choose the name from boards.h that matches your setup
 #ifndef MOTHERBOARD
   #define MOTHERBOARD BOARD_RAMPS_14_EFB
-#endif
-
-// Add Soongon I3 machine code control
-#ifdef BOARD_SOONGON_I3
-  #define SOONGON_I3_SECTION_CODE
 #endif
 
 // Name displayed in the LCD "Ready" message and Info menu
@@ -421,6 +428,7 @@
  *   998 : Dummy Table that ALWAYS reads 25°C or the temperature defined below.
  *   999 : Dummy Table that ALWAYS reads 100°C or the temperature defined below.
  */
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
 #define TEMP_SENSOR_0 1
 #define TEMP_SENSOR_1 0
 #define TEMP_SENSOR_2 0
@@ -432,6 +440,19 @@
 #define TEMP_SENSOR_BED 1
 #define TEMP_SENSOR_PROBE 0
 #define TEMP_SENSOR_CHAMBER 0
+#else
+#define TEMP_SENSOR_0 1
+#define TEMP_SENSOR_1 0
+#define TEMP_SENSOR_2 0
+#define TEMP_SENSOR_3 0
+#define TEMP_SENSOR_4 0
+#define TEMP_SENSOR_5 0
+#define TEMP_SENSOR_6 0
+#define TEMP_SENSOR_7 0
+#define TEMP_SENSOR_BED 0
+#define TEMP_SENSOR_PROBE 0
+#define TEMP_SENSOR_CHAMBER 0
+#endif
 
 // Dummy thermistor constant temperature readings, for use with 998 and 999
 #define DUMMY_THERMISTOR_998_VALUE 25
@@ -465,6 +486,7 @@
 // Above this temperature the heater will be switched off.
 // This can protect components from overheating, but NOT from shorts and failures.
 // (Use MINTEMP for thermistor short/failure protection.)
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
 #define HEATER_0_MAXTEMP 275
 #define HEATER_1_MAXTEMP 275
 #define HEATER_2_MAXTEMP 275
@@ -474,6 +496,17 @@
 #define HEATER_6_MAXTEMP 275
 #define HEATER_7_MAXTEMP 275
 #define BED_MAXTEMP      120
+#else
+#define HEATER_0_MAXTEMP 275
+#define HEATER_1_MAXTEMP 275
+#define HEATER_2_MAXTEMP 275
+#define HEATER_3_MAXTEMP 275
+#define HEATER_4_MAXTEMP 275
+#define HEATER_5_MAXTEMP 275
+#define HEATER_6_MAXTEMP 275
+#define HEATER_7_MAXTEMP 275
+#define BED_MAXTEMP      150
+#endif
 
 //===========================================================================
 //============================= PID Settings ================================
@@ -495,9 +528,19 @@
   // If you are using a pre-configured hotend then you can use one of the value sets by uncommenting it
 
   // Ultimaker
+#if ENABLED(SOONGON_I3_SECTION_CODE)
   #define DEFAULT_Kp 12
   #define DEFAULT_Ki 0.56
   #define DEFAULT_Kd 48.70
+#elif ENABLED(SOONGON_MINI_SECTION_CODE)
+  #define DEFAULT_Kp 19.53
+  #define DEFAULT_Ki 1.79
+  #define DEFAULT_Kd 53.24
+#else
+  #define DEFAULT_Kp 22.2
+  #define DEFAULT_Ki 1.08
+  #define DEFAULT_Kd 114
+#endif
 
   // MakerGear
   //#define DEFAULT_Kp 7.0
@@ -563,8 +606,13 @@
   //#define PID_DEBUG             // Sends debug data to the serial port. Use 'M303 D' to toggle activation.
   //#define PID_OPENLOOP          // Puts PID in open loop. M104/M140 sets the output power from 0 to PID_MAX
   //#define SLOW_PWM_HEATERS      // PWM with very low frequency (roughly 0.125Hz=8s) and minimum state time of approximately 1s useful for heaters driven by a relay
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
   #define PID_FUNCTIONAL_RANGE 25 // If the temperature difference between the target temperature and the actual temperature
                                   // is more than PID_FUNCTIONAL_RANGE then the PID will be shut off and the heater will be set to min/max.
+#else
+  #define PID_FUNCTIONAL_RANGE 10 // If the temperature difference between the target temperature and the actual temperature
+                                  // is more than PID_FUNCTIONAL_RANGE then the PID will be shut off and the heater will be set to min/max.
+#endif
 #endif
 
 // @section extruder
@@ -577,14 +625,24 @@
  * *** IT IS HIGHLY RECOMMENDED TO LEAVE THIS OPTION ENABLED! ***
  */
 #define PREVENT_COLD_EXTRUSION
+#if ENABLED(SOONGON_MINI_SECTION_CODE)
+#define EXTRUDE_MINTEMP 50
+#else
 #define EXTRUDE_MINTEMP 170
+#endif
 
 /**
  * Prevent a single extrusion longer than EXTRUDE_MAXLENGTH.
  * Note: For Bowden Extruders make this large enough to allow load/unload.
  */
 #define PREVENT_LENGTHY_EXTRUDE
+#if ENABLED(SOONGON_I3_SECTION_CODE)
 #define EXTRUDE_MAXLENGTH 1000
+#elif ENABLED(SOONGON_MINI_SECTION_CODE)
+#define EXTRUDE_MAXLENGTH 500
+#else
+#define EXTRUDE_MAXLENGTH 200
+#endif
 
 //===========================================================================
 //======================== Thermal Runaway Protection =======================
@@ -665,6 +723,7 @@
 #endif
 
 // Mechanical endstop with COM to ground and NC to Signal uses "false" here (most common setup).
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
 #define X_MIN_ENDSTOP_INVERTING true  // Set to true to invert the logic of the endstop.
 #define Y_MIN_ENDSTOP_INVERTING true  // Set to true to invert the logic of the endstop.
 #define Z_MIN_ENDSTOP_INVERTING true  // Set to true to invert the logic of the endstop.
@@ -672,6 +731,15 @@
 #define Y_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
 #define Z_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
 #define Z_MIN_PROBE_ENDSTOP_INVERTING true // Set to true to invert the logic of the probe.
+#else
+#define X_MIN_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
+#define Y_MIN_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
+#define Z_MIN_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
+#define X_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
+#define Y_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
+#define Z_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
+#define Z_MIN_PROBE_ENDSTOP_INVERTING false // Set to true to invert the logic of the probe.
+#endif
 
 /**
  * Stepper Drivers
@@ -752,14 +820,22 @@
  * Override with M92
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
 #define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 400, 85 }
+#else
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 4000, 500 }
+#endif
 
 /**
  * Default Max Feed Rate (mm/s)
  * Override with M203
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
+#if ENABLED(SOONGON_MINI_SECTION_CODE)
+#define DEFAULT_MAX_FEEDRATE          { 120, 120, 5, 25 }
+#else
 #define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 25 }
+#endif
 
 //#define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
 #if ENABLED(LIMITED_MAX_FR_EDITING)
@@ -772,7 +848,11 @@
  * Override with M201
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
 #define DEFAULT_MAX_ACCELERATION      { 500, 500, 100, 1000 }
+#else
+#define DEFAULT_MAX_ACCELERATION      { 3000, 3000, 100, 10000 }
+#endif
 
 //#define LIMITED_MAX_ACCEL_EDITING     // Limit edit via M201 or LCD to DEFAULT_MAX_ACCELERATION * 2
 #if ENABLED(LIMITED_MAX_ACCEL_EDITING)
@@ -787,9 +867,15 @@
  *   M204 R    Retract Acceleration
  *   M204 T    Travel Acceleration
  */
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
 #define DEFAULT_ACCELERATION          500     // X, Y, Z and E acceleration for printing moves
 #define DEFAULT_RETRACT_ACCELERATION  500     // E acceleration for retracts
-#define DEFAULT_TRAVEL_ACCELERATION   1000    // X, Y, Z acceleration for travel (non printing) moves
+#define DEFAULT_TRAVEL_ACCELERATION   500    // X, Y, Z acceleration for travel (non printing) moves
+#else
+#define DEFAULT_ACCELERATION          3000    // X, Y, Z and E acceleration for printing moves
+#define DEFAULT_RETRACT_ACCELERATION  3000    // E acceleration for retracts
+#define DEFAULT_TRAVEL_ACCELERATION   3000    // X, Y, Z acceleration for travel (non printing) moves
+#endif
 
 /**
  * Default Jerk limits (mm/s)
@@ -799,15 +885,25 @@
  * When changing speed and direction, if the difference is less than the
  * value set here, it may happen instantaneously.
  */
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
+#define CLASSIC_JERK
+#else
 //#define CLASSIC_JERK
+#endif
 #if ENABLED(CLASSIC_JERK)
   #define DEFAULT_XJERK 10.0
   #define DEFAULT_YJERK 10.0
   #define DEFAULT_ZJERK  0.3
 
-  //#define TRAVEL_EXTRA_XYJERK 0.0     // Additional jerk allowance for all travel moves
+  #if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
+    #define TRAVEL_EXTRA_XYJERK 0.0     // Additional jerk allowance for all travel moves
 
-  //#define LIMITED_JERK_EDITING        // Limit edit via M205 or LCD to DEFAULT_aJERK * 2
+    #define LIMITED_JERK_EDITING        // Limit edit via M205 or LCD to DEFAULT_aJERK * 2
+  #else
+    //#define TRAVEL_EXTRA_XYJERK 0.0     // Additional jerk allowance for all travel moves
+
+    //#define LIMITED_JERK_EDITING        // Limit edit via M205 or LCD to DEFAULT_aJERK * 2
+  #endif
   #if ENABLED(LIMITED_JERK_EDITING)
     #define MAX_JERK_EDIT_VALUES { 20, 20, 0.6, 10 } // ...or, set your own edit limits
   #endif
@@ -836,7 +932,11 @@
  *
  * See https://github.com/synthetos/TinyG/wiki/Jerk-Controlled-Motion-Explained
  */
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
 #define S_CURVE_ACCELERATION
+#else
+//#define S_CURVE_ACCELERATION
+#endif
 
 //===========================================================================
 //============================= Z Probe Options =============================
@@ -894,7 +994,11 @@
  * A Fix-Mounted Probe either doesn't deploy or needs manual deployment.
  *   (e.g., an inductive probe or a nozzle-based probe-switch.)
  */
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
 #define FIX_MOUNTED_PROBE
+#else
+//#define FIX_MOUNTED_PROBE
+#endif
 
 /**
  * Use the nozzle as the probe, as with a conductive
@@ -998,11 +1102,19 @@
  *     |    [-]    |
  *     O-- FRONT --+
  */
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
 #define NOZZLE_TO_PROBE_OFFSET { 0, 0, 0 }
+#else
+#define NOZZLE_TO_PROBE_OFFSET { 10, 10, 0 }
+#endif
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
 #define PROBING_MARGIN 0
+#else
+#define PROBING_MARGIN 10
+#endif
 
 // X and Y axis travel speed (mm/min) between probes
 #define XY_PROBE_SPEED (133*60)
@@ -1039,12 +1151,28 @@
  * Example: `M851 Z-5` with a CLEARANCE of 4  =>  9mm from bed to nozzle.
  *     But: `M851 Z+1` with a CLEARANCE of 2  =>  2mm from bed to nozzle.
  */
+#if ENABLED(SOONGON_I3_SECTION_CODE)
 #define Z_CLEARANCE_DEPLOY_PROBE    5 // Z Clearance for Deploy/Stow
 #define Z_CLEARANCE_BETWEEN_PROBES  0 // Z Clearance between probe points
 #define Z_CLEARANCE_MULTI_PROBE     3 // Z Clearance between multiple probes
 //#define Z_AFTER_PROBING           5 // Z position after probing is done
 
 #define Z_PROBE_LOW_POINT          -5 // Farthest distance below the trigger-point to go before stopping
+#elif ENABLED(SOONGON_MINI_SECTION_CODE)
+#define Z_CLEARANCE_DEPLOY_PROBE    5 // Z Clearance for Deploy/Stow
+#define Z_CLEARANCE_BETWEEN_PROBES 15 // Z Clearance between probe points
+#define Z_CLEARANCE_MULTI_PROBE     3 // Z Clearance between multiple probes
+//#define Z_AFTER_PROBING           5 // Z position after probing is done
+
+#define Z_PROBE_LOW_POINT          -5 // Farthest distance below the trigger-point to go before stopping
+#else
+#define Z_CLEARANCE_DEPLOY_PROBE   10 // Z Clearance for Deploy/Stow
+#define Z_CLEARANCE_BETWEEN_PROBES  5 // Z Clearance between probe points
+#define Z_CLEARANCE_MULTI_PROBE     5 // Z Clearance between multiple probes
+//#define Z_AFTER_PROBING           5 // Z position after probing is done
+
+#define Z_PROBE_LOW_POINT          -2 // Farthest distance below the trigger-point to go before stopping
+#endif
 
 // For M851 give a range for adjusting the Z probe offset
 #define Z_PROBE_OFFSET_RANGE_MIN -20
@@ -1098,9 +1226,19 @@
 // @section machine
 
 // Invert the stepper direction. Change (or reverse the motor connector) if an axis goes the wrong way.
+#if ENABLED(SOONGON_I3_SECTION_CODE)
 #define INVERT_X_DIR false
 #define INVERT_Y_DIR true
 #define INVERT_Z_DIR true
+#elif ENABLED(SOONGON_MINI_SECTION_CODE)
+#define INVERT_X_DIR false
+#define INVERT_Y_DIR false
+#define INVERT_Z_DIR true
+#else
+#define INVERT_X_DIR false
+#define INVERT_Y_DIR true
+#define INVERT_Z_DIR false
+#endif
 
 // @section extruder
 
@@ -1134,16 +1272,40 @@
 // @section machine
 
 // The size of the print bed
+#if ENABLED(SOONGON_I3_SECTION_CODE)
 #define X_BED_SIZE 260
 #define Y_BED_SIZE 260
+#elif ENABLED(SOONGON_MINI_SECTION_CODE)
+#define X_BED_SIZE 102
+#define Y_BED_SIZE 102
+#else
+#define X_BED_SIZE 200
+#define Y_BED_SIZE 200
+#endif
 
 // Travel limits (mm) after homing, corresponding to endstop positions.
+#if ENABLED(SOONGON_I3_SECTION_CODE)
 #define X_MIN_POS 0
 #define Y_MIN_POS 0
 #define Z_MIN_POS 0
 #define X_MAX_POS X_BED_SIZE
 #define Y_MAX_POS Y_BED_SIZE
 #define Z_MAX_POS 260
+#elif ENABLED(SOONGON_MINI_SECTION_CODE)
+#define X_MIN_POS 0
+#define Y_MIN_POS 0
+#define Z_MIN_POS 0
+#define X_MAX_POS X_BED_SIZE
+#define Y_MAX_POS Y_BED_SIZE
+#define Z_MAX_POS 102
+#else
+#define X_MIN_POS 0
+#define Y_MIN_POS 0
+#define Z_MIN_POS 0
+#define X_MAX_POS X_BED_SIZE
+#define Y_MAX_POS Y_BED_SIZE
+#define Z_MAX_POS 200
+#endif
 
 /**
  * Software Endstops
@@ -1246,7 +1408,11 @@
  */
 //#define AUTO_BED_LEVELING_3POINT
 //#define AUTO_BED_LEVELING_LINEAR
+#if ENABLED(SOONGON_MINI_SECTION_CODE)
+#define AUTO_BED_LEVELING_BILINEAR
+#else
 //#define AUTO_BED_LEVELING_BILINEAR
+#endif
 //#define AUTO_BED_LEVELING_UBL
 //#define MESH_BED_LEVELING
 
@@ -1397,11 +1563,20 @@
 // - Move the Z probe (or nozzle) to a defined XY point before Z Homing.
 // - Prevent Z homing when the Z probe is outside bed area.
 //
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
 #define Z_SAFE_HOMING
 
 #if ENABLED(Z_SAFE_HOMING)
   #define Z_SAFE_HOMING_X_POINT 0//X_CENTER  // X point for Z homing
   #define Z_SAFE_HOMING_Y_POINT 0//Y_CENTER  // Y point for Z homing
+#endif
+#else
+//#define Z_SAFE_HOMING
+
+#if ENABLED(Z_SAFE_HOMING)
+  #define Z_SAFE_HOMING_X_POINT X_CENTER  // X point for Z homing
+  #define Z_SAFE_HOMING_Y_POINT Y_CENTER  // Y point for Z homing
+#endif
 #endif
 
 // Homing speeds (mm/min)
@@ -1409,7 +1584,11 @@
 #define HOMING_FEEDRATE_Z  (4*60)
 
 // Validate that endstops are triggered on homing moves
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
 //#define VALIDATE_HOMING_ENDSTOPS
+#else
+#define VALIDATE_HOMING_ENDSTOPS
+#endif
 
 // @section calibrate
 
@@ -1483,12 +1662,22 @@
  *   M501 - Read settings from EEPROM. (i.e., Throw away unsaved changes)
  *   M502 - Revert settings to "factory" defaults. (Follow with M500 to init the EEPROM.)
  */
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
 #define EEPROM_SETTINGS     // Persistent storage with M500 and M501
 //#define DISABLE_M503        // Saves ~2700 bytes of PROGMEM. Disable for release!
 #define EEPROM_CHITCHAT       // Give feedback on EEPROM commands. Disable to save PROGMEM.
 #define EEPROM_BOOT_SILENT    // Keep M503 quiet and only give errors during first load
 #if ENABLED(EEPROM_SETTINGS)
   //#define EEPROM_AUTO_INIT  // Init EEPROM automatically on any errors.
+#endif
+#else
+//#define EEPROM_SETTINGS     // Persistent storage with M500 and M501
+//#define DISABLE_M503        // Saves ~2700 bytes of PROGMEM. Disable for release!
+#define EEPROM_CHITCHAT       // Give feedback on EEPROM commands. Disable to save PROGMEM.
+#define EEPROM_BOOT_SILENT    // Keep M503 quiet and only give errors during first load
+#if ENABLED(EEPROM_SETTINGS)
+  //#define EEPROM_AUTO_INIT  // Init EEPROM automatically on any errors.
+#endif
 #endif
 
 //
@@ -1497,9 +1686,15 @@
 // When enabled Marlin will send a busy status message to the host
 // every couple of seconds when it can't accept commands.
 //
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
 //#define HOST_KEEPALIVE_FEATURE        // Disable this if your host doesn't like keepalive messages
 #define DEFAULT_KEEPALIVE_INTERVAL 2  // Number of seconds between "busy" messages. Set with M113.
 #define BUSY_WHILE_HEATING            // Some hosts require "busy" messages even during heating
+#else
+#define HOST_KEEPALIVE_FEATURE        // Disable this if your host doesn't like keepalive messages
+#define DEFAULT_KEEPALIVE_INTERVAL 2  // Number of seconds between "busy" messages. Set with M113.
+#define BUSY_WHILE_HEATING            // Some hosts require "busy" messages even during heating
+#endif
 
 //
 // G20/G21 Inch mode support
@@ -1535,7 +1730,11 @@
  *    P1  Raise the nozzle always to Z-park height.
  *    P2  Raise the nozzle by Z-park amount, limited to Z_MAX_POS.
  */
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
 #define NOZZLE_PARK_FEATURE
+#else
+//#define NOZZLE_PARK_FEATURE
+#endif
 
 #if ENABLED(NOZZLE_PARK_FEATURE)
   // Specify a park position as { X, Y, Z_raise }
@@ -1738,7 +1937,11 @@
  * you must uncomment the following option or it won't work.
  *
  */
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
 #define SDSUPPORT
+#else
+//#define SDSUPPORT
+#endif
 
 /**
  * SD CARD: SPI SPEED
@@ -1746,16 +1949,26 @@
  * Enable one of the following items for a slower SPI transfer speed.
  * This may be required to resolve "volume init" errors.
  */
-#define SPI_SPEED SPI_HALF_SPEED
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
+//#define SPI_SPEED SPI_HALF_SPEED
+//#define SPI_SPEED SPI_QUARTER_SPEED
+#define SPI_SPEED SPI_EIGHTH_SPEED
+#else
+//#define SPI_SPEED SPI_HALF_SPEED
 //#define SPI_SPEED SPI_QUARTER_SPEED
 //#define SPI_SPEED SPI_EIGHTH_SPEED
+#endif
 
 /**
  * SD CARD: ENABLE CRC
  *
  * Use CRC checks and retries on the SD communication.
  */
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
+#define SD_CHECK_AND_RETRY
+#else
 //#define SD_CHECK_AND_RETRY
+#endif
 
 /**
  * LCD Menu Items
@@ -1835,8 +2048,13 @@
 // Note: Test audio output with the G-Code:
 //  M300 S<frequency Hz> P<duration ms>
 //
+#if ENABLED(SOONGON_I3_SECTION_CODE)
 #define LCD_FEEDBACK_FREQUENCY_DURATION_MS 100
 //#define LCD_FEEDBACK_FREQUENCY_HZ 5000
+#else
+//#define LCD_FEEDBACK_FREQUENCY_DURATION_MS 2
+//#define LCD_FEEDBACK_FREQUENCY_HZ 5000
+#endif
 
 //=============================================================================
 //======================== LCD / Controller Selection =========================
@@ -1991,7 +2209,11 @@
 // RepRapDiscount FULL GRAPHIC Smart Controller
 // https://reprap.org/wiki/RepRapDiscount_Full_Graphic_Smart_Controller
 //
+#if ENABLED(SOONGON_I3_SECTION_CODE)
 #define REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER
+#else
+//#define REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER
+#endif
 
 //
 // ReprapWorld Graphical LCD

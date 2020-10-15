@@ -100,6 +100,13 @@ class Stopwatch {
     FORCE_INLINE static bool isPaused() { return state == PAUSED; }
 
     /**
+     * @brief Check if the timer is stopped
+     * @details Return true if the timer is currently stopped, false otherwise.
+     * @return true if stopwatch is stopped
+     */
+    FORCE_INLINE static bool isStopped() { return state == STOPPED; }
+
+    /**
      * @brief Get the running time
      * @details Return the total number of seconds the timer has been running.
      * @return the delta since starting the stopwatch

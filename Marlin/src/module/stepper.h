@@ -516,6 +516,10 @@ class Stepper {
     // Set direction bits for all steppers
     static void set_directions();
 
+    #if ENABLED(SOONGON_MINI_SECTION_CODE)
+      static float get_position_length(const volatile int axis);
+    #endif
+
   private:
 
     // Set the current position in steps

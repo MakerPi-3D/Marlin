@@ -91,7 +91,7 @@
   #define MACHINE_UUID DEFAULT_MACHINE_UUID
 #endif
 
-#if MB(SOONGON_I3) 
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
 #define MARLIN_WEBSITE_URL "https://soongon.com"
 #else
 #define MARLIN_WEBSITE_URL "https://marlinfw.org"

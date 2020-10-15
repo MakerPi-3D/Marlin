@@ -162,7 +162,11 @@
  * THERMAL_PROTECTION_HYSTERESIS and/or THERMAL_PROTECTION_PERIOD
  */
 #if ENABLED(THERMAL_PROTECTION_HOTENDS)
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
   #define THERMAL_PROTECTION_PERIOD 60        // Seconds
+#else
+  #define THERMAL_PROTECTION_PERIOD 40        // Seconds
+#endif
   #define THERMAL_PROTECTION_HYSTERESIS 4     // Degrees Celsius
 
   //#define ADAPTIVE_FAN_SLOWING              // Slow part cooling fan if temperature drops
@@ -1135,7 +1139,11 @@
 
   #define SD_PROCEDURE_DEPTH 1              // Increase if you need more nested M32 calls
 
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
   #define SD_FINISHED_STEPPERRELEASE false  // Disable steppers when SD Print is finished
+#else
+  #define SD_FINISHED_STEPPERRELEASE true   // Disable steppers when SD Print is finished
+#endif
   #define SD_FINISHED_RELEASECOMMAND "M84"  // Use "M84XYE" to keep Z enabled so your bed stays in place
 
   // Reverse SD sort to show "more recent" files first, according to the card's FAT.
@@ -1160,6 +1168,7 @@
    * an option on the LCD screen to continue the print from the last-known
    * point in the file.
    */
+#if ENABLED(SOONGON_I3_SECTION_CODE)
   #define POWER_LOSS_RECOVERY
   #if ENABLED(POWER_LOSS_RECOVERY)
     #define PLR_ENABLED_DEFAULT   true  // Power Loss Recovery enabled by default. (Set with 'M413 Sn' & M500)
@@ -1175,6 +1184,23 @@
     // especially with "vase mode" printing. Set too high and vases cannot be continued.
     #define POWER_LOSS_MIN_Z_CHANGE 0.05 // (mm) Minimum Z change before saving power-loss data
   #endif
+#else
+  //#define POWER_LOSS_RECOVERY
+  #if ENABLED(POWER_LOSS_RECOVERY)
+    #define PLR_ENABLED_DEFAULT   false // Power Loss Recovery enabled by default. (Set with 'M413 Sn' & M500)
+    //#define BACKUP_POWER_SUPPLY       // Backup power / UPS to move the steppers on power loss
+    //#define POWER_LOSS_ZRAISE       2 // (mm) Z axis raise on resume (on power loss with UPS)
+    //#define POWER_LOSS_PIN         44 // Pin to detect power loss. Set to -1 to disable default pin on boards without module.
+    //#define POWER_LOSS_STATE     HIGH // State of pin indicating power loss
+    //#define POWER_LOSS_PULL           // Set pullup / pulldown as appropriate
+    //#define POWER_LOSS_PURGE_LEN   20 // (mm) Length of filament to purge on resume
+    //#define POWER_LOSS_RETRACT_LEN 10 // (mm) Length of filament to retract on fail. Requires backup power.
+
+    // Without a POWER_LOSS_PIN the following option helps reduce wear on the SD card,
+    // especially with "vase mode" printing. Set too high and vases cannot be continued.
+    #define POWER_LOSS_MIN_Z_CHANGE 0.05 // (mm) Minimum Z change before saving power-loss data
+  #endif
+#endif
 
   /**
    * Sort SD file listings in alphabetical order.
@@ -1385,7 +1411,11 @@
   //#define STATUS_ALT_FAN_BITMAP     // Use the alternative fan bitmap
   //#define STATUS_FAN_FRAMES 3       // :[0,1,2,3,4] Number of fan animation frames
   //#define STATUS_HEAT_PERCENT       // Show heating in a progress bar
+#if ENABLED(SOONGON_I3_SECTION_CODE)
   #define BOOT_MARLIN_LOGO_SMALL    // Show a smaller Marlin logo on the Boot Screen (saving 399 bytes of flash)
+#else
+  //#define BOOT_MARLIN_LOGO_SMALL    // Show a smaller Marlin logo on the Boot Screen (saving 399 bytes of flash)
+#endif
   //#define BOOT_MARLIN_LOGO_ANIMATED // Animated Marlin logo. Costs ~‭3260 (or ~940) bytes of PROGMEM.
 
   // Frivolous Game Options
@@ -1864,7 +1894,11 @@
 
 // The ASCII buffer for serial input
 #define MAX_CMD_SIZE 96
-#define BUFSIZE 16
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
+#define BUFSIZE 128
+#else
+#define BUFSIZE 4
+#endif
 
 // Transmission to Host Buffer Size
 // To save 386 bytes of PROGMEM (and TX_BUFFER_SIZE+3 bytes of RAM) set to 0.
@@ -2052,6 +2086,7 @@
  * Requires NOZZLE_PARK_FEATURE.
  * This feature is required for the default FILAMENT_RUNOUT_SCRIPT.
  */
+#if ENABLED(SOONGON_I3_SECTION_CODE)
 #define ADVANCED_PAUSE_FEATURE
 #if ENABLED(ADVANCED_PAUSE_FEATURE)
   #define PAUSE_PARK_RETRACT_FEEDRATE         60  // (mm/s) Initial retract feedrate.
@@ -2095,6 +2130,52 @@
 
   #define FILAMENT_LOAD_UNLOAD_GCODES           // Add M701/M702 Load/Unload G-codes, plus Load/Unload in the LCD Prepare menu.
   //#define FILAMENT_UNLOAD_ALL_EXTRUDERS         // Allow M702 to unload all extruders above a minimum target temp (as set by M302)
+#endif
+#else
+//#define ADVANCED_PAUSE_FEATURE
+#if ENABLED(ADVANCED_PAUSE_FEATURE)
+  #define PAUSE_PARK_RETRACT_FEEDRATE         60  // (mm/s) Initial retract feedrate.
+  #define PAUSE_PARK_RETRACT_LENGTH            2  // (mm) Initial retract.
+                                                  // This short retract is done immediately, before parking the nozzle.
+  #define FILAMENT_CHANGE_UNLOAD_FEEDRATE     10  // (mm/s) Unload filament feedrate. This can be pretty fast.
+  #define FILAMENT_CHANGE_UNLOAD_ACCEL        25  // (mm/s^2) Lower acceleration may allow a faster feedrate.
+  #define FILAMENT_CHANGE_UNLOAD_LENGTH      100  // (mm) The length of filament for a complete unload.
+                                                  //   For Bowden, the full length of the tube and nozzle.
+                                                  //   For direct drive, the full length of the nozzle.
+                                                  //   Set to 0 for manual unloading.
+  #define FILAMENT_CHANGE_SLOW_LOAD_FEEDRATE   6  // (mm/s) Slow move when starting load.
+  #define FILAMENT_CHANGE_SLOW_LOAD_LENGTH     0  // (mm) Slow length, to allow time to insert material.
+                                                  // 0 to disable start loading and skip to fast load only
+  #define FILAMENT_CHANGE_FAST_LOAD_FEEDRATE   6  // (mm/s) Load filament feedrate. This can be pretty fast.
+  #define FILAMENT_CHANGE_FAST_LOAD_ACCEL     25  // (mm/s^2) Lower acceleration may allow a faster feedrate.
+  #define FILAMENT_CHANGE_FAST_LOAD_LENGTH     0  // (mm) Load length of filament, from extruder gear to nozzle.
+                                                  //   For Bowden, the full length of the tube and nozzle.
+                                                  //   For direct drive, the full length of the nozzle.
+  //#define ADVANCED_PAUSE_CONTINUOUS_PURGE       // Purge continuously up to the purge length until interrupted.
+  #define ADVANCED_PAUSE_PURGE_FEEDRATE        3  // (mm/s) Extrude feedrate (after loading). Should be slower than load feedrate.
+  #define ADVANCED_PAUSE_PURGE_LENGTH         50  // (mm) Length to extrude after loading.
+                                                  //   Set to 0 for manual extrusion.
+                                                  //   Filament can be extruded repeatedly from the Filament Change menu
+                                                  //   until extrusion is consistent, and to purge old filament.
+  #define ADVANCED_PAUSE_RESUME_PRIME          0  // (mm) Extra distance to prime nozzle after returning from park.
+  //#define ADVANCED_PAUSE_FANS_PAUSE             // Turn off print-cooling fans while the machine is paused.
+
+                                                  // Filament Unload does a Retract, Delay, and Purge first:
+  #define FILAMENT_UNLOAD_PURGE_RETRACT       13  // (mm) Unload initial retract length.
+  #define FILAMENT_UNLOAD_PURGE_DELAY       5000  // (ms) Delay for the filament to cool after retract.
+  #define FILAMENT_UNLOAD_PURGE_LENGTH         8  // (mm) An unretract is done, then this length is purged.
+  #define FILAMENT_UNLOAD_PURGE_FEEDRATE      25  // (mm/s) feedrate to purge before unload
+
+  #define PAUSE_PARK_NOZZLE_TIMEOUT           45  // (seconds) Time limit before the nozzle is turned off for safety.
+  #define FILAMENT_CHANGE_ALERT_BEEPS         10  // Number of alert beeps to play when a response is needed.
+  #define PAUSE_PARK_NO_STEPPER_TIMEOUT           // Enable for XYZ steppers to stay powered on during filament change.
+
+  //#define PARK_HEAD_ON_PAUSE                    // Park the nozzle during pause and filament change.
+  //#define HOME_BEFORE_FILAMENT_CHANGE           // If needed, home before parking for filament change
+
+  //#define FILAMENT_LOAD_UNLOAD_GCODES           // Add M701/M702 Load/Unload G-codes, plus Load/Unload in the LCD Prepare menu.
+  //#define FILAMENT_UNLOAD_ALL_EXTRUDERS         // Allow M702 to unload all extruders above a minimum target temp (as set by M302)
+#endif
 #endif
 
 // @section tmc

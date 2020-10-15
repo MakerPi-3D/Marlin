@@ -55,7 +55,7 @@
   #endif
 #endif
 
-#if !MB(SOONGON_I3)
+#if DISABLED(SOONGON_I3_SECTION_CODE)
 // Optimize this code with -O3
 #pragma GCC optimize (3)
 #endif
@@ -71,7 +71,7 @@
   WRITE(ST7920_CLK_PIN, HIGH);            ST7920_DELAY_3; \
   val <<= 1; }while(0)
 
-#if !MB(SOONGON_I3)
+#if DISABLED(SOONGON_I3_SECTION_CODE)
 // Optimize this code with -O3
 #pragma GCC optimize (3)
 #endif

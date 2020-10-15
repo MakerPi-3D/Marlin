@@ -151,6 +151,10 @@
   #include "../lcd/tft/touch.h"
 #endif
 
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
+  #include "../../SoongonCore.h"
+#endif
+
 #pragma pack(push, 1) // No padding between variables
 
 typedef struct { uint16_t X, Y, Z, X2, Y2, Z2, Z3, Z4, E0, E1, E2, E3, E4, E5, E6, E7; } tmc_stepper_current_t;
@@ -233,6 +237,9 @@ typedef struct SettingsDataStruct {
     bed_mesh_t z_values;                                // G29
   #else
     float z_values[3][3];
+  #endif
+  #if ENABLED(SOONGON_MINI_SECTION_CODE)
+    float z_height;
   #endif
 
   //
@@ -573,6 +580,13 @@ void MarlinSettings::postprocess() {
    * M500 - Store Configuration
    */
   bool MarlinSettings::save() {
+#if ENABLED(SOONGON_MINI_SECTION_CODE)
+    if (!sg_mini::mini_level_check_data())
+    {
+      return false;
+    }
+#endif
+
     float dummyf = 0;
     char ver[4] = "ERR";
 
@@ -598,6 +612,9 @@ void MarlinSettings::postprocess() {
     // Planner Motion
     //
     {
+      #if ENABLED(SOONGON_MINI_SECTION_CODE)
+        _FIELD_TEST(planner.settings);
+      #endif
       EEPROM_WRITE(planner.settings);
 
       #if HAS_CLASSIC_JERK
@@ -737,6 +754,10 @@ void MarlinSettings::postprocess() {
 
       const uint8_t grid_max_x = TERN(AUTO_BED_LEVELING_BILINEAR, GRID_MAX_POINTS_X, 3),
                     grid_max_y = TERN(AUTO_BED_LEVELING_BILINEAR, GRID_MAX_POINTS_Y, 3);
+      #if ENABLED(SOONGON_MINI_SECTION_CODE)
+        bilinear_grid_spacing[0] = 51;
+        bilinear_grid_spacing[1] = 51;
+      #endif
       EEPROM_WRITE(grid_max_x);
       EEPROM_WRITE(grid_max_y);
       EEPROM_WRITE(bilinear_grid_spacing);
@@ -747,6 +768,9 @@ void MarlinSettings::postprocess() {
       #else
         dummyf = 0;
         for (uint16_t q = grid_max_x * grid_max_y; q--;) EEPROM_WRITE(dummyf);
+      #endif
+      #if ENABLED(SOONGON_MINI_SECTION_CODE)
+        EEPROM_WRITE(sg_mini::mini_z_height);
       #endif
     }
 
@@ -1426,6 +1450,9 @@ void MarlinSettings::postprocess() {
     EEPROM_START();
 
     char stored_ver[4];
+    #if ENABLED(SOONGON_MINI_SECTION_CODE)
+      memset(stored_ver,0,sizeof(stored_ver));
+    #endif
     EEPROM_READ_ALWAYS(stored_ver);
 
     uint16_t stored_crc;
@@ -1440,6 +1467,9 @@ void MarlinSettings::postprocess() {
       DEBUG_ECHO_START();
       DEBUG_ECHOLNPAIR("EEPROM version mismatch (EEPROM=", stored_ver, " Marlin=" EEPROM_VERSION ")");
       TERN(EEPROM_AUTO_INIT,,ui.eeprom_alert_version());
+      #if ENABLED(SOONGON_MINI_SECTION_CODE)
+        sg_mini::mini_is_eeprom_error = true;
+      #endif
       eeprom_error = true;
     }
     else {
@@ -1606,6 +1636,9 @@ void MarlinSettings::postprocess() {
             EEPROM_READ(bilinear_grid_spacing);        // 2 ints
             EEPROM_READ(bilinear_start);               // 2 ints
             EEPROM_READ(z_values);                     // 9 to 256 floats
+            #if ENABLED(SOONGON_MINI_SECTION_CODE)
+              EEPROM_READ(sg_mini::mini_z_height);
+            #endif
           }
           else // EEPROM data is stale
         #endif // AUTO_BED_LEVELING_BILINEAR

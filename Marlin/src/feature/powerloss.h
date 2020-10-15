@@ -38,9 +38,15 @@
   #define POWER_LOSS_STATE HIGH
 #endif
 
+#if ENABLED(SOONGON_I3_SECTION_CODE)
 //#define DEBUG_POWER_LOSS_RECOVERY
 //#define SAVE_EACH_CMD_MODE
 #define SAVE_INFO_INTERVAL_MS 20
+#else
+//#define DEBUG_POWER_LOSS_RECOVERY
+//#define SAVE_EACH_CMD_MODE
+//#define SAVE_INFO_INTERVAL_MS 0
+#endif
 
 typedef struct {
   uint8_t valid_head;

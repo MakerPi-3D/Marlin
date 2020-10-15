@@ -326,7 +326,7 @@ void PrintJobRecovery::resume() {
 
   const uint32_t resume_sdpos = info.sdpos; // Get here before the stepper ISR overwrites it
 
-  #ifdef SOONGON_I3_SECTION_CODE
+  #if ENABLED(SOONGON_I3_SECTION_CODE)
     #if HAS_HOTEND
       HOTEND_LOOP() {
         #if HAS_MULTI_HOTEND

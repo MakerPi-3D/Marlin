@@ -48,6 +48,10 @@
   #include "../feature/joystick.h"
 #endif
 
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
+  #include "../SoongonCore.h"
+#endif
+
 Endstops endstops;
 
 // private:
@@ -493,10 +497,16 @@ void Endstops::update() {
 
   #if !ENDSTOP_NOISE_THRESHOLD
     if (!abort_enabled()) return;
+    #if ENABLED(SOONGON_MINI_SECTION_CODE)
+      if (!sg_mini::mini_is_endstops)  return;
+    #endif
   #endif
 
   #define UPDATE_ENDSTOP_BIT(AXIS, MINMAX) SET_BIT_TO(live_state, _ENDSTOP(AXIS, MINMAX), (READ(_ENDSTOP_PIN(AXIS, MINMAX)) != _ENDSTOP_INVERTING(AXIS, MINMAX)))
   #define COPY_LIVE_STATE(SRC_BIT, DST_BIT) SET_BIT_TO(live_state, DST_BIT, TEST(live_state, SRC_BIT))
+  #if ENABLED(SOONGON_MINI_SECTION_CODE)
+    #define UPDATE_ENDSTOP_LEVEL_BIT(AXIS, MINMAX) SET_BIT_TO(live_state, _ENDSTOP(AXIS, MINMAX), (READ(PA3) != _ENDSTOP_INVERTING(AXIS, MINMAX)))
+  #endif
 
   #if ENABLED(G38_PROBE_TARGET) && PIN_EXISTS(Z_MIN_PROBE) && !(CORE_IS_XY || CORE_IS_XZ)
     // If G38 command is active check Z_MIN_PROBE for ALL movement
@@ -598,6 +608,13 @@ void Endstops::update() {
         #else
           COPY_LIVE_STATE(Z_MIN, Z4_MIN);
         #endif
+      #endif
+    #elif ENABLED(Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN)
+      #if ENABLED(SOONGON_MINI_SECTION_CODE)
+        if(sg_mini::mini_level_is_check())
+          UPDATE_ENDSTOP_LEVEL_BIT(Z, MIN);
+        else
+          UPDATE_ENDSTOP_BIT(Z, MIN);
       #endif
     #endif
   #endif
@@ -839,6 +856,9 @@ void Endstops::update() {
       #endif
     }
     else { // Z +direction. Gantry up, bed down.
+      #if ENABLED(SOONGON_MINI_SECTION_CODE)
+        sg_mini::mini_level_set_z_height();
+      #endif
       #if HAS_Z_MAX || (Z_SPI_SENSORLESS && Z_HOME_DIR > 0)
         #if ENABLED(Z_MULTI_ENDSTOPS)
           PROCESS_ENDSTOP_Z(MAX);

@@ -111,6 +111,10 @@
   #include "../libs/buzzer.h"
 #endif
 
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
+  #include "../SoongonCore.h"
+#endif
+
 #if HOTEND_USES_THERMISTOR
   #if ENABLED(TEMP_SENSOR_1_AS_REDUNDANT)
     static const temp_entry_t* heater_ttbl_map[2] = { HEATER_0_TEMPTABLE, HEATER_1_TEMPTABLE };
@@ -813,11 +817,21 @@ void Temperature::_temp_error(const heater_ind_t heater, PGM_P const serial_msg,
 
 void Temperature::max_temp_error(const heater_ind_t heater) {
   TERN_(DWIN_CREALITY_LCD, Popup_Window_Temperature(1));
+#if ENABLED(SOONGON_MINI_SECTION_CODE)
+  #if ENABLED(SDSUPPORT)
+    sg_mini::mini_sd_write_err_log((char*)STR_T_MAXTEMP);
+  #endif
+#endif
   _temp_error(heater, PSTR(STR_T_MAXTEMP), GET_TEXT(MSG_ERR_MAXTEMP));
 }
 
 void Temperature::min_temp_error(const heater_ind_t heater) {
   TERN_(DWIN_CREALITY_LCD, Popup_Window_Temperature(0));
+  #if ENABLED(SOONGON_MINI_SECTION_CODE)
+    #if ENABLED(SDSUPPORT)
+      sg_mini::mini_sd_write_err_log((char*)STR_T_MINTEMP);
+    #endif
+  #endif
   _temp_error(heater, PSTR(STR_T_MINTEMP), GET_TEXT(MSG_ERR_MINTEMP));
 }
 
@@ -2409,7 +2423,9 @@ public:
  *  - Planner clean buffer
  */
 void Temperature::tick() {
-
+  #if ENABLED(SOONGON_MINI_SECTION_CODE)
+    sg_mini::mini_tick();
+  #endif
   static int8_t temp_count = -1;
   static ADCSensorState adc_sensor_state = StartupDelay;
   static uint8_t pwm_count = _BV(SOFT_PWM_SCALE);
@@ -2868,7 +2884,11 @@ void Temperature::tick() {
   #endif
 
   // Poll endstops state, if required
+#if ENABLED(SOONGON_MINI_SECTION_CODE)
+  //endstops.poll();
+#else
   endstops.poll();
+#endif
 
   // Periodically call the planner timer
   planner.tick();
@@ -3065,6 +3085,9 @@ void Temperature::tick() {
       wait_for_heatup = true;
       millis_t now, next_temp_ms = 0, next_cool_check_ms = 0;
       do {
+        #if ENABLED(SOONGON_MINI_SECTION_CODE)
+          sg_mini::mini_load_unload_heatting_abort();
+        #endif
         // Target temperature might be changed during the loop
         if (target_temp != degTargetHotend(target_extruder)) {
           wants_to_cool = isCoolingHotend(target_extruder);
@@ -3147,6 +3170,9 @@ void Temperature::tick() {
         TERN_(PRINTER_EVENT_LEDS, printerEventLEDs.onHeatingDone());
       }
 
+      #if ENABLED(SOONGON_MINI_SECTION_CODE)
+        sg_mini::mini_heatting_finish();
+      #endif
       return wait_for_heatup;
     }
 

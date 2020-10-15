@@ -71,6 +71,10 @@
   #include "../feature/babystep.h"
 #endif
 
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
+  #include "../SoongonCore.h"
+#endif
+
 #define DEBUG_OUT ENABLED(DEBUG_LEVELING_FEATURE)
 #include "../core/debug_out.h"
 
@@ -1047,7 +1051,15 @@ void prepare_line_to_destination() {
 
       #if ENABLED(PREVENT_COLD_EXTRUSION)
         ignore_e = thermalManager.tooColdToExtrude(active_extruder);
-        if (ignore_e) SERIAL_ECHO_MSG(STR_ERR_COLD_EXTRUDE_STOP);
+        if (ignore_e) 
+        {
+          SERIAL_ECHO_MSG(STR_ERR_COLD_EXTRUDE_STOP);
+          #if ENABLED(SOONGON_MINI_SECTION_CODE)
+            #if ENABLED(SDSUPPORT)
+              sg_mini::mini_sd_write_err_log((char*)STR_ERR_COLD_EXTRUDE_STOP);
+            #endif
+          #endif
+        }
       #endif
 
       #if ENABLED(PREVENT_LENGTHY_EXTRUDE)
@@ -1629,6 +1641,13 @@ void homeaxis(const AxisEnum axis) {
       if (axis == Z_AXIS) bltouch.stow(); // The final STOW
     #endif
   }
+
+  #if ENABLED(SOONGON_MINI_SECTION_CODE)
+    #if ENABLED(AUTO_BED_LEVELING_BILINEAR)
+      if(axis == Z_AXIS && sg_mini::mini_level_is_idle())
+        do_homing_move(axis, sg_mini::mini_z_height, get_homing_bump_feedrate(axis));
+    #endif
+  #endif
 
   #if HAS_EXTRA_ENDSTOPS
     const bool pos_dir = axis_home_dir > 0;

@@ -526,6 +526,13 @@ void Stepper::set_directions() {
   DIR_WAIT_AFTER();
 }
 
+#if ENABLED(SOONGON_MINI_SECTION_CODE)
+  float Stepper::get_position_length(const volatile int axis)
+  {
+    return (float)count_position[axis]/planner.settings.axis_steps_per_mm[axis]; // float
+  }
+#endif
+
 #if ENABLED(S_CURVE_ACCELERATION)
   /**
    *  This uses a quintic (fifth-degree) Bézier polynomial for the velocity curve, giving
@@ -1531,6 +1538,17 @@ void Stepper::pulse_phase_isr() {
   const uint32_t pending_events = step_event_count - step_events_completed;
   uint8_t events_to_do = _MIN(pending_events, steps_per_isr);
 
+  #if ENABLED(SOONGON_MINI_SECTION_CODE)
+    // At this point, we must ensure the movement about to execute isn't
+    // trying to force the head against a limit switch. If using interrupt-
+    // driven change detection, and already against a limit then no call to
+    // the endstop_triggered method will be done and the movement will be
+    // done against the endstop. So, check the limits here: If the movement
+    // is against the limits, the block will be marked as to be killed, and
+    // on the next call to this ISR, will be discarded.
+    endstops.update();
+  #endif
+
   // Just update the value we will get at the end of the loop
   step_events_completed += events_to_do;
 
@@ -2193,14 +2211,16 @@ uint32_t Stepper::block_phase_isr() {
         #endif
       #endif // LASER_POWER_INLINE
 
-      // At this point, we must ensure the movement about to execute isn't
-      // trying to force the head against a limit switch. If using interrupt-
-      // driven change detection, and already against a limit then no call to
-      // the endstop_triggered method will be done and the movement will be
-      // done against the endstop. So, check the limits here: If the movement
-      // is against the limits, the block will be marked as to be killed, and
-      // on the next call to this ISR, will be discarded.
-      endstops.update();
+      #if DISABLED(SOONGON_MINI_SECTION_CODE)
+        // At this point, we must ensure the movement about to execute isn't
+        // trying to force the head against a limit switch. If using interrupt-
+        // driven change detection, and already against a limit then no call to
+        // the endstop_triggered method will be done and the movement will be
+        // done against the endstop. So, check the limits here: If the movement
+        // is against the limits, the block will be marked as to be killed, and
+        // on the next call to this ISR, will be discarded.
+        endstops.update();
+      #endif
 
       #if ENABLED(Z_LATE_ENABLE)
         // If delayed Z enable, enable it now. This option will severely interfere with
@@ -3483,3 +3503,5 @@ void Stepper::report_positions() {
   }
 
 #endif // HAS_MICROSTEPS
+
+

@@ -47,6 +47,10 @@ GCodeQueue queue;
   #include "../feature/powerloss.h"
 #endif
 
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
+  #include "../SoongonCore.h"
+#endif
+
 /**
  * GCode line number handling. Hosts may opt to include line numbers when
  * sending commands to Marlin, and lines will be checked for sequentiality.
@@ -141,7 +145,8 @@ bool GCodeQueue::_enqueue(const char* cmd, bool say_ok/*=false*/
   #endif
 ) {
   if (*cmd == ';' || length >= BUFSIZE) return false;
-  strcpy(command_buffer[index_w], cmd);
+  memset(command_buffer[index_w], 0, sizeof(char)*MAX_CMD_SIZE);
+  strncpy(command_buffer[index_w], cmd, sizeof(char)*MAX_CMD_SIZE);
   _commit_command(say_ok
     #if HAS_MULTI_SERIAL
       , pn
@@ -476,8 +481,10 @@ void GCodeQueue::get_serial_commands() {
 
           const long gcode_N = strtol(npos + 1, nullptr, 10);
 
+#if DISABLED(SOONGON_MINI_SECTION_CODE)
           if (gcode_N != last_N[i] + 1 && !M110)
             return gcode_line_error(PSTR(STR_ERR_LINE_NO), i);
+#endif
 
           char *apos = strrchr(command, '*');
           if (apos) {

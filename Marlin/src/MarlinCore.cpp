@@ -221,6 +221,10 @@
   #include "feature/password/password.h"
 #endif
 
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
+  #include "SoongonCore.h"
+#endif
+
 PGMSTR(NUL_STR, "");
 PGMSTR(M112_KILL_STR, "M112 Shutdown");
 PGMSTR(G28_STR, "G28");
@@ -457,6 +461,7 @@ void startOrResumeJob() {
     #endif
     wait_for_heatup = false;
     TERN_(POWER_LOSS_RECOVERY, recovery.purge());
+    TERN_(SOONGON_MINI_SECTION_CODE, sg_mini::mini_sd_abort_printing());
     #ifdef EVENT_GCODE_SD_ABORT
       queue.inject_P(PSTR(EVENT_GCODE_SD_ABORT));
     #endif
@@ -575,7 +580,7 @@ inline void manage_inactivity(const bool ignore_stepper_queue=false) {
 
   TERN_(USE_CONTROLLER_FAN, controllerFan.update()); // Check if fan should be turned on to cool stepper drivers down
 
-  #ifdef SOONGON_I3_SECTION_CODE
+  #if ENABLED(SOONGON_I3_SECTION_CODE)
     // When the nozzle is greater than 50 degrees, turn on the hot fan of the nozzle fan
     if(thermalManager.degHotend(0) >= 50) 
     {
@@ -792,6 +797,10 @@ void idle(TERN_(ADVANCED_PAUSE_FEATURE, bool no_stepper_sleep/*=false*/)) {
   #if HAS_TFT_LVGL_UI
     LV_TASK_HANDLER();
   #endif
+  
+  #if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
+    sg_core.run();
+  #endif
 }
 
 /**
@@ -930,6 +939,9 @@ void setup() {
     while (!MYSERIAL0 && PENDING(millis(), serial_connect_timeout)) { /*nada*/ }
     #if HAS_MULTI_SERIAL
       MYSERIAL1.begin(BAUDRATE);
+      #if ENABLED(SOONGON_MINI_SECTION_CODE)
+        SETUP_RUN(sg_mini::mini_level_init());
+      #endif
       serial_connect_timeout = millis() + 1000UL;
       while (!MYSERIAL1 && PENDING(millis(), serial_connect_timeout)) { /*nada*/ }
     #endif
@@ -1243,6 +1255,10 @@ void setup() {
 
   marlin_state = MF_RUNNING;
 
+  #if ENABLED(SOONGON_MINI_SECTION_CODE)
+    SETUP_RUN(sg_mini::mini_setup());
+  #endif
+
   SETUP_LOG("setup() completed.");
 }
 
@@ -1262,7 +1278,6 @@ void setup() {
 void loop() {
   do {
     idle();
-
     #if ENABLED(SDSUPPORT)
       card.checkautostart();
       if (card.flag.abort_sd_printing) abortSDPrinting();

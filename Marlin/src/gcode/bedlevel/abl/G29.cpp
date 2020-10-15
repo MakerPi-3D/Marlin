@@ -68,6 +68,10 @@
   #include "../../../module/tool_change.h"
 #endif
 
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
+  #include "../../../SoongonCore.h"
+#endif
+
 #if ABL_GRID
   #if ENABLED(PROBE_Y_FIRST)
     #define PR_OUTER_VAR meshCount.x
@@ -163,7 +167,9 @@
  *
  */
 G29_TYPE GcodeSuite::G29() {
-
+#if ENABLED(SOONGON_MINI_SECTION_CODE)
+  sg_mini::mini_is_endstops = true;
+#endif
   reset_stepper_timeout();
 
   const bool seenQ = EITHER(DEBUG_LEVELING_FEATURE, PROBE_MANUALLY) && parser.seen('Q');
@@ -899,6 +905,9 @@ G29_TYPE GcodeSuite::G29() {
   report_current_position();
 
   G29_RETURN(isnan(measured_z));
+#if ENABLED(SOONGON_MINI_SECTION_CODE)
+  sg_mini::mini_is_endstops = false;
+#endif
 }
 
 #endif // HAS_ABL_NOT_UBL

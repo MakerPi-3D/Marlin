@@ -25,11 +25,18 @@
 #include "../../core/serial.h"
 #include "../../inc/MarlinConfig.h"
 
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
+  #include "../../SoongonCore.h"
+#endif
+
 /**
  * M500: Store settings in EEPROM
  */
 void GcodeSuite::M500() {
   (void)settings.save();
+#if ENABLED(SOONGON_MINI_SECTION_CODE)
+  sg_mini::mini_level_finish();
+#endif
 }
 
 /**

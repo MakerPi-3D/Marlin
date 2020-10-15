@@ -51,6 +51,10 @@
   #include "../feature/pause.h"
 #endif
 
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
+  #include "../SoongonCore.h"
+#endif
+
 // public:
 
 card_flags_t CardReader::flag;
@@ -264,6 +268,10 @@ void CardReader::printListing(SdFile parent, const char * const prepend/*=nullpt
     }
     else if (is_dir_or_gcode(p)) {
       createFilename(filename, p);
+      #if ENABLED(SOONGON_MINI_SECTION_CODE)
+        if(sg_mini::mini_key_print_find_0_gcode_file(longFilename))
+          break;
+      #endif
       if (prepend) SERIAL_ECHO(prepend);
       SERIAL_ECHO(filename);
       SERIAL_CHAR(' ');
@@ -521,7 +529,13 @@ void announceOpen(const uint8_t doing, const char * const path) {
 //   - 2 : Resuming from a sub-procedure
 //
 void CardReader::openFileRead(char * const path, const uint8_t subcall_type/*=0*/) {
-  if (!isMounted()) return;
+  if (!isMounted()) 
+  {
+    #if ENABLED(SOONGON_MINI_SECTION_CODE)
+      sg_mini::mini_led_set_warning();
+    #endif
+    return;
+  }
 
   switch (subcall_type) {
     case 0:      // Starting a new print. "Now fresh file: ..."
@@ -575,7 +589,12 @@ void CardReader::openFileRead(char * const path, const uint8_t subcall_type/*=0*
     ui.set_status(longFilename[0] ? longFilename : fname);
   }
   else
+  {
     openFailed(fname);
+    #if ENABLED(SOONGON_MINI_SECTION_CODE)
+      sg_mini::mini_led_set_warning();
+    #endif
+  }
 }
 
 inline void echo_write_to_file(const char * const fname) {

@@ -58,6 +58,10 @@
   #include "../../feature/spindle_laser.h"
 #endif
 
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
+  #include "../../SoongonCore.h"
+#endif
+
 #define DEBUG_OUT ENABLED(DEBUG_LEVELING_FEATURE)
 #include "../../core/debug_out.h"
 
@@ -195,6 +199,10 @@
  *
  */
 void GcodeSuite::G28() {
+#if ENABLED(SOONGON_MINI_SECTION_CODE)
+  sg_mini::mini_set_homing(false);
+  sg_mini::mini_is_endstops = true;
+#endif
   DEBUG_SECTION(log_G28, "G28", DEBUGGING(LEVELING));
   if (DEBUGGING(LEVELING)) log_machine_info();
 
@@ -478,4 +486,9 @@ void GcodeSuite::G28() {
       L64xxManager.set_param((L64XX_axis_t)cv, L6470_ABS_POS, stepper.position(L64XX_axis_xref[cv]));
     }
   #endif
+#if ENABLED(SOONGON_MINI_SECTION_CODE)
+  sg_mini::mini_set_homing(true);
+  set_bed_leveling_enabled(true);
+  sg_mini::mini_is_endstops = false;
+#endif
 }

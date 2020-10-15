@@ -317,7 +317,7 @@
 #define BOARD_TRIGORILLA_PRO          4035  // Trigorilla Pro (STM32F103ZET6)
 
 #define BOARD_SOONGON_I3              4080  // Soongon I3 (STM32F103RCT6)
-
+#define BOARD_SOONGON_MINI            4081  // Soongon Mini (STM32F103RCT6)
 //
 // ARM Cortex-M4F
 //

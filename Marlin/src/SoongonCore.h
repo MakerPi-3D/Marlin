@@ -54,10 +54,11 @@ namespace sg_mini
 class SoongonCore
 {
 public:
-#if ENABLED(SOONGON_I3_SECTION_CODE)
-  static void i3();
-#endif
   static void run();
+private:
+#if ENABLED(SOONGON_I3_SECTION_CODE)
+  static void i3_run();
+#endif
 };
 
 extern SoongonCore sg_core;

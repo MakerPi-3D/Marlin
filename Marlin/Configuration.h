@@ -832,7 +832,7 @@
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
 #if ENABLED(SOONGON_MINI_SECTION_CODE)
-#define DEFAULT_MAX_FEEDRATE          { 120, 120, 5, 25 }
+#define DEFAULT_MAX_FEEDRATE          { 100, 100, 2, 25 }
 #else
 #define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 25 }
 #endif
@@ -905,7 +905,11 @@
     //#define LIMITED_JERK_EDITING        // Limit edit via M205 or LCD to DEFAULT_aJERK * 2
   #endif
   #if ENABLED(LIMITED_JERK_EDITING)
-    #define MAX_JERK_EDIT_VALUES { 20, 20, 0.6, 10 } // ...or, set your own edit limits
+    #if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
+      #define MAX_JERK_EDIT_VALUES { 10, 10, 0.3, 10 } // ...or, set your own edit limits
+    #else
+      #define MAX_JERK_EDIT_VALUES { 20, 20, 0.6, 10 } // ...or, set your own edit limits
+    #endif
   #endif
 #endif
 

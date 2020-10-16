@@ -418,7 +418,11 @@ void CardReader::manage_media() {
     prev_stat = stat;                 // Change now to prevent re-entry
 
     if (stat) {                       // Media Inserted
-      safe_delay(500);                // Some boards need a delay to get settled
+      #if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
+        safe_delay(1000);               // Some boards need a delay to get settled
+      #else
+        safe_delay(500);                // Some boards need a delay to get settled
+      #endif
       mount();                        // Try to mount the media
       #if MB(FYSETC_CHEETAH, FYSETC_CHEETAH_V12, FYSETC_AIO_II)
         reset_stepper_drivers();      // Workaround for Cheetah bug

@@ -109,7 +109,6 @@ namespace sg_mini
 
       if (card.filename == NULL)
       {
-        SERIAL_ECHOLNPAIR("open failed, File:", "file does not exist");
         mini_key_print_reset_status();
         SERIAL_ECHOLNPAIR("mini_key_print_for_print==>>open failed, File: file does not exist");
       }

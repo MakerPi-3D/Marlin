@@ -5,6 +5,8 @@
 
 #include "../gcode/queue.h"
 
+#include "../module/stepper.h"
+
 #if ENABLED(SDSUPPORT)
   #include "../sd/cardreader.h"
 #endif
@@ -36,8 +38,12 @@ namespace sg_mini
 
   void mini_sd_abort_printing()
   {
-    queue.enqueue_now_P(PSTR("G92 Z0"));
-    queue.enqueue_now_P(PSTR("G1 F2000 Z10"));
+    if(stepper.get_position_length(Z_AXIS) <= Z_MAX_POS - 10)
+    {
+      queue.enqueue_now_P(PSTR("G91"));
+      queue.enqueue_now_P(PSTR("G0 F300 Z+10"));
+      queue.enqueue_now_P(PSTR("G90"));
+    }
 
     if (!sg_mini::mini_is_homing)
       queue.enqueue_now_P(PSTR("G28 X0 Y0"));

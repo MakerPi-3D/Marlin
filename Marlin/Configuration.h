@@ -1289,8 +1289,8 @@
 
 // The size of the print bed
 #if ENABLED(SOONGON_I3_SECTION_CODE)
-#define X_BED_SIZE 270
-#define Y_BED_SIZE 270
+#define X_BED_SIZE 260
+#define Y_BED_SIZE 260
 #elif ENABLED(SOONGON_MINI_SECTION_CODE)
 #define X_BED_SIZE 102
 #define Y_BED_SIZE 102

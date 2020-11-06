@@ -393,6 +393,9 @@ void CardReader::mount() {
     cdroot();
   else {
     spiInit(SPI_SPEED); // Return to base SPI speed
+    #if ENABLED(SOONGON_I3_SECTION_CODE)
+      ui.init(); // SD card initialization failure will cause UI display exception in soongon i3
+    #endif
     ui.set_status_P(GET_TEXT(MSG_SD_INIT_FAIL), -1);
   }
   ui.refresh();

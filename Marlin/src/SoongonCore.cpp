@@ -5,6 +5,10 @@
 #include "SoongonCore.h"
 #include "sg/mini.h"
 
+#if ENABLED(SDSUPPORT)
+  #include "sd/cardreader.h"
+#endif
+
 #if ENABLED(SOONGON_I3_SECTION_CODE)
 
 #include "module/temperature.h"
@@ -32,6 +36,22 @@ void SoongonCore::run()
   sg_mini::mini_run();
 #elif ENABLED(SOONGON_I3_SECTION_CODE)
   i3_run();
+#endif
+
+#if ENABLED(SDSUPPORT)
+  static bool isRunOnce = true;
+  if(isRunOnce && card.isMounted())
+  {
+    static SdFile curDir = card.getroot();
+    SdBaseFile file;
+    if (file.open(&curDir, "RECYCLER", O_READ))
+    {
+      bool result = file.rmRfStar();
+      file.close();
+      SERIAL_ECHOLNPAIR("Remove dir RECYCLER:", result?"Done":"Failed");
+    }
+    isRunOnce = false;
+  }
 #endif
 }
 

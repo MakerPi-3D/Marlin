@@ -390,8 +390,9 @@ void CardReader::mount() {
   }
 
   if (flag.mounted)
+  {
     cdroot();
-  else {
+  } else {
     spiInit(SPI_SPEED); // Return to base SPI speed
     #if ENABLED(SOONGON_I3_SECTION_CODE)
       ui.init(); // SD card initialization failure will cause UI display exception in soongon i3
@@ -1170,9 +1171,12 @@ void CardReader::fileHasFinished() {
     if (!isMounted()) return;
     if (recovery.file.isOpen()) return;
     if (!recovery.file.open(&root, recovery.filename, read ? O_READ : O_CREAT | O_WRITE | O_TRUNC | O_SYNC))
+    {
       SERIAL_ECHOLNPAIR(STR_SD_OPEN_FILE_FAIL, recovery.filename, ".");
-    else if (!read)
+    } else if (!read)
+    {
       echo_write_to_file(recovery.filename);
+    }
   }
 
   // Removing the job recovery file currently requires closing

@@ -163,3 +163,10 @@
   #endif // NEWPANEL
 
 #endif // HAS_SPI_LCD
+
+//
+// Power Recovery
+//
+//#define POWER_LOSS_PIN                        PA15  // Pin to detect power loss
+//#define POWER_LOSS_STATE                      HIGH
+

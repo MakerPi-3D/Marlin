@@ -311,10 +311,13 @@ void PrintJobRecovery::write() {
   debug(PSTR("Write"));
 
   open(false);
-  file.seekSet(0);
-  const int16_t ret = file.write(&info, sizeof(info));
-  if (ret == -1) DEBUG_ECHOLNPGM("Power-loss file write failed.");
-  if (!file.close()) DEBUG_ECHOLNPGM("Power-loss file close failed.");
+  if (file.isOpen())
+  {
+    file.seekSet(0);
+    const int16_t ret = file.write(&info, sizeof(info));
+    if (ret == -1) DEBUG_ECHOLNPGM("Power-loss file write failed.");
+    if (!file.close()) DEBUG_ECHOLNPGM("Power-loss file close failed.");
+  }
 }
 
 /**

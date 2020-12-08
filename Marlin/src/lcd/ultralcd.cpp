@@ -159,7 +159,7 @@ constexpr uint8_t epps = ENCODER_PULSES_PER_STEP;
   bool MarlinUI::defer_return_to_status;
 #endif
 
-uint8_t MarlinUI::lcd_status_update_delay = 1; // First update one loop delayed
+uint8_t MarlinUI::lcd_status_update_delay = 10; // First update one loop delayed
 
 #if BOTH(FILAMENT_LCD_DISPLAY, SDSUPPORT)
   millis_t MarlinUI::next_filament_display; // = 0

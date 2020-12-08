@@ -12,6 +12,9 @@
 #if ENABLED(SOONGON_I3_SECTION_CODE)
 
 #include "module/temperature.h"
+#include "lcd/ultralcd.h"
+
+static volatile millis_t lcd_init_timeout = 0;
 
 void SoongonCore::i3_run(void)
 {
@@ -25,6 +28,13 @@ void SoongonCore::i3_run(void)
   {
     thermalManager.fan_speed[0] = 0;
     SERIAL_ECHOLNPGM("Fan off, speed s0");
+  }
+
+  if (ELAPSED(millis(), lcd_init_timeout))
+  {
+    lcd_init_timeout = millis() + 60*1000;
+    ui.init_lcd();
+    ui.update();
   }
 }
 

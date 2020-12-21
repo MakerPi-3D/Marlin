@@ -112,7 +112,11 @@ void PrintJobRecovery::check() {
   if (card.isMounted()) {
     load();
     if (!valid()) return cancel();
+#if ENABLED(SOONGON_MINI_SECTION_CODE)
+    queue.inject_P(PSTR("M1000"));
+#else
     queue.inject_P(PSTR("M1000 S"));
+#endif
     TERN_(DWIN_CREALITY_LCD, dwin_flag = true);
   }
 }
@@ -329,7 +333,7 @@ void PrintJobRecovery::resume() {
 
   const uint32_t resume_sdpos = info.sdpos; // Get here before the stepper ISR overwrites it
 
-  #if ENABLED(SOONGON_I3_SECTION_CODE)
+  #if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
     #if HAS_HOTEND
       HOTEND_LOOP() {
         #if HAS_MULTI_HOTEND

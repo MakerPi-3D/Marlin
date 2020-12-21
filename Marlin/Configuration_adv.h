@@ -1168,7 +1168,7 @@
    * an option on the LCD screen to continue the print from the last-known
    * point in the file.
    */
-#if ENABLED(SOONGON_I3_SECTION_CODE)
+#if EITHER(SOONGON_I3_SECTION_CODE, SOONGON_MINI_SECTION_CODE)
   #define POWER_LOSS_RECOVERY
   #if ENABLED(POWER_LOSS_RECOVERY)
     #define PLR_ENABLED_DEFAULT   true  // Power Loss Recovery enabled by default. (Set with 'M413 Sn' & M500)

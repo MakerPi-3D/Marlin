@@ -4,6 +4,7 @@
 
 #include "SoongonCore.h"
 #include "sg/mini.h"
+#include "lcd/ultralcd.h"
 
 #if ENABLED(SDSUPPORT)
   #include "sd/cardreader.h"
@@ -32,8 +33,9 @@ void SoongonCore::i3_run(void)
 
   if (ELAPSED(millis(), lcd_init_timeout))
   {
-    lcd_init_timeout = millis() + 60*1000;
-    ui.init_lcd();
+    lcd_init_timeout = millis() + 10 * 1000;
+    ui.init();
+    ui.refresh();
     ui.update();
   }
 }

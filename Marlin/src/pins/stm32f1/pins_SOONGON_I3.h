@@ -32,7 +32,7 @@
  */
 
 #define BOARD_INFO_NAME      "Misc. STM32F103RCT6"
-#define DEFAULT_MACHINE_NAME "Soongon I3"
+#define DEFAULT_MACHINE_NAME "Soongon P2"
 
 // Ignore temp readings during development.
 //#define BOGUS_TEMPERATURE_GRACE_PERIOD    2000

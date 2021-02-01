@@ -166,9 +166,11 @@ void GcodeSuite::get_destination_from_command() {
     destination.e = current_position.e;
 
   #if ENABLED(POWER_LOSS_RECOVERY) && !PIN_EXISTS(POWER_LOSS)
+    #if DISABLED(SOONGON_I3_SECTION_CODE)
     // Only update power loss recovery on moves with E
     if (recovery.enabled && IS_SD_PRINTING() && seen.e && (seen.x || seen.y))
       recovery.save();
+    #endif
   #endif
 
   if (parser.linearval('F') > 0)
